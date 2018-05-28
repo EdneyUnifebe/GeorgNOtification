@@ -6,4 +6,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="nome_usuario">Nome Usuarios</string>
+    <string name="nameUsuario">Nome:</string>
 </resources>

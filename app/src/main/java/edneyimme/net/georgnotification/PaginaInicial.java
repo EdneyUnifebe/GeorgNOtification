@@ -1,6 +1,7 @@
 package edneyimme.net.georgnotification;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,33 +12,30 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
+
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import edneyimme.net.myapplication.adapter.listUsersAdapter;
-import edneyimme.net.myapplication.dao.Users;
+import edneyimme.net.georgnotification.adapter.listUsersAdapter;
+import edneyimme.net.georgnotification.dao.Users;
+
 
 public class PaginaInicial extends Activity {
 
     ListView listViewUsers;
-    private static String URL_USER_DATA="http://www.apsesis.com.br/webservices/listausuarios.php";
-
+    private static String URL_USER_DATA = "http://www.apsesis.com.br/webservices/listausuarios.php";
+    listUsersAdapter listAdapter;
     private ArrayList<Users> listaDeUsuarios;
 
     @Override
@@ -52,113 +50,100 @@ public class PaginaInicial extends Activity {
             }
         });
         carrecarListaServidor();
-        listUsersAdapter listAdapter = new listUsersAdapter(PaginaInicial.this, this.listaDeUsuarios);
+        listAdapter = new listUsersAdapter(PaginaInicial.this, this.listaDeUsuarios);
         listViewUsers.setAdapter(listAdapter);
+
     }
 
     /**
      * Chamar tela detalhe de usuario para fazer upload de imagens
+     *
      * @param i
      */
     private void chamarTelaDetalheUsuario(int i) {
         Intent intent = new Intent(PaginaInicial.this, UploadAprovarImagem.class);
+        intent.putExtra(UploadAprovarImagem.USER_DAO, listaDeUsuarios.get(i));
         startActivity(intent);
     }
 
     /**
      * Carregar fontes de informacao
      */
-    public void carrecarListaServidor(){
-        downloadInformationTask d = new downloadInformationTask();
-        d.execute("");
+    public void carrecarListaServidor() {
+        listaDeUsuarios = new ArrayList<Users>();
+
+        LoadingInformation l = new LoadingInformation(PaginaInicial.this);
+        l.execute();
+
+
     }
 
-    class downloadInformationTask extends AsyncTask<String, String, Void> {
-
-        private ProgressDialog progressDialog = new ProgressDialog(PaginaInicial.this);
-        InputStream inputStream = null;
-        String result = "";
 
 
-        protected void onPreExecute() {
-            progressDialog.setMessage("Atualizando informações...");
-            progressDialog.show();
-            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                public void onCancel(DialogInterface arg0) {
-                    //TODO DESENVOLVER METODO ONCANCEL
-                    //MyAsyncTask.this.cancel(true);
-                }
-            });
+    private void getServerData() {
+        String urlGetServerData = URL_USER_DATA;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlGetServerData, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            Log.d("JsonResponse", "Array " + response.getJSONArray("capturas"));
+                            JSONArray array = response.getJSONArray("capturas");
+                            for (int p = 0; p < array.length(); p++) {
+                                JSONObject jsonObject = null;
+
+                                jsonObject = array.getJSONObject(p);
+
+                                String nomeUsuario = jsonObject.getString("pessoa_nome");
+                                String idUsuario = jsonObject.getString("captura_id");
+                                String arquivo_nome = jsonObject.getString("arquivo_nome");
+                                Users users = new Users(idUsuario, nomeUsuario, arquivo_nome);
+                                listaDeUsuarios.add(users);
+                            }
+                            listAdapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Exception", "Error=" + error.toString());
+                    }
+                });
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private class LoadingInformation extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog dialog;
+
+        public LoadingInformation(PaginaInicial activity) {
+            dialog = new ProgressDialog(PaginaInicial.this);
         }
 
-
         @Override
-        protected Void doInBackground(String... strings) {
+        protected void onPreExecute() {
+            dialog.setMessage("Aguarde.");
+            dialog.show();
+        }
 
-            String url_select = URL_USER_DATA;
-
-            ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-
-            try {
-                HttpClient httpClient = new DefaultHttpClient();
-
-                HttpPost httpPost = new HttpPost(url_select);
-                httpPost.setEntity(new UrlEncodedFormEntity(param));
-                HttpResponse httpResponse = httpClient.execute(httpPost);
-                HttpEntity httpEntity = httpResponse.getEntity();
-
-
-                inputStream = httpEntity.getContent();
-            } catch (UnsupportedEncodingException e1) {
-                Log.e("UnsupportedEncoding", e1.toString());
-                e1.printStackTrace();
-            } catch (ClientProtocolException e2) {
-                Log.e("ClientProtocolException", e2.toString());
-                e2.printStackTrace();
-            } catch (IllegalStateException e3) {
-                Log.e("IllegalStateException", e3.toString());
-                e3.printStackTrace();
-            } catch (IOException e4) {
-                Log.e("IOException", e4.toString());
-                e4.printStackTrace();
-            }
-
-            try {
-                BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"), 8);
-                StringBuilder sBuilder = new StringBuilder();
-
-                String line = null;
-                while ((line = bReader.readLine()) != null) {
-                    sBuilder.append(line + "\n");
-                }
-
-                inputStream.close();
-                result = sBuilder.toString();
-
-            } catch (Exception e) {
-                Log.e("StringBuilding", "Error converting result " + e.toString());
-            }
+        protected Void doInBackground(Void... args) {
+            getServerData();
             return null;
         }
 
-        protected void onPostExecute(Void v) {
-            try {
-                JSONArray jArray = new JSONArray(result);
-                for(int i=0; i < jArray.length(); i++) {
+        protected void onPostExecute(Void result) {
 
-                    JSONObject jObject = jArray.getJSONObject(i);
-
-                    String nomeUsuario = jObject.getString("pessoa_nome");
-                    String idUsuario = jObject.getString("captura_id");
-
-                    Users users = new Users(idUsuario, nomeUsuario);
-                    listaDeUsuarios.add(users);
-
-                }
-                this.progressDialog.dismiss();
-            } catch (JSONException e) {
-                Log.e("JSONException", "Error: " + e.toString());
+            if (dialog.isShowing()) {
+                dialog.dismiss();
             }
         }
     }
+
 }

@@ -1,6 +1,17 @@
 package edneyimme.net.georgnotification.controller;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,10 +21,22 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UploadArquivo {
 
+
+    private Context contexto;
+
+    public void setContexto(Context contexto) {
+        this.contexto = contexto;
+    }
+
     private static String SERVER_URL = "http://www.apsesis.com.br/webservices/uploadArquivo.php";
+
+    private static String URL_UPDATE_STATUS = "";
+
     public int uploadFile(final String selectedFilePath) {
 
         int serverResponseCode = 0;
@@ -86,17 +109,17 @@ public class UploadArquivo {
                 serverResponseCode = connection.getResponseCode();
                 String serverResponseMessage = connection.getResponseMessage();
 
-                Log.e("UploadFile", "Server Response is: " + serverResponseMessage + ": " + serverResponseCode);
+                Log.i("UploadFile", "Server Response is: " + serverResponseMessage + ": code =  " + serverResponseCode);
 
                 //response code of 200 indicates the server status OK
                 if (serverResponseCode == 200) {
 
-                    Log.e("UploadFile", "File Upload completed.\n\n You can see the uploaded file here: \n\n" + "http://coderefer.com/extras/uploads/" + fileName);
+                    Log.e("UploadFile", "File Upload completed.\n\n You can see the uploaded file here: \n\n" + "" + fileName);
 
 
                 }
 
-                //closing the input and output streams
+
                 fileInputStream.close();
                 dataOutputStream.flush();
                 dataOutputStream.close();

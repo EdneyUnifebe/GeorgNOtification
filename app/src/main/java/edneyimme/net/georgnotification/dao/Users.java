@@ -1,6 +1,8 @@
 package edneyimme.net.georgnotification.dao;
 
-public class Users {
+import java.io.Serializable;
+
+public class Users implements Serializable{
 
     private String id;
     private String nome;
@@ -39,5 +41,14 @@ public class Users {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id='" + id + '\'' +
+                ", nome='" + nome + '\'' +
+                ", fileName='" + fileName + '\'' +
+                '}';
     }
 }

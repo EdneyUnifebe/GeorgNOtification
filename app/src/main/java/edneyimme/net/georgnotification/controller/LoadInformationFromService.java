@@ -2,7 +2,8 @@ package edneyimme.net.georgnotification.controller;
 
 import java.util.ArrayList;
 
-import edneyimme.net.myapplication.dao.Users;
+import edneyimme.net.georgnotification.dao.Users;
+
 
 public class LoadInformationFromService {
     ArrayList<Users> usersList = new ArrayList<Users>();

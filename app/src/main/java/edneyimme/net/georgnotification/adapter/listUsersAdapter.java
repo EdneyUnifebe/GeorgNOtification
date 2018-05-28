@@ -9,8 +9,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import edneyimme.net.myapplication.R;
-import edneyimme.net.myapplication.dao.Users;
+import edneyimme.net.georgnotification.R;
+import edneyimme.net.georgnotification.dao.Users;
+
 
 public class listUsersAdapter extends ArrayAdapter {
 
