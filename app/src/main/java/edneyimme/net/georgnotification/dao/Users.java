@@ -7,17 +7,23 @@ public class Users implements Serializable{
     private String id;
     private String nome;
     private String fileName;
+    private int fileType;
 
-    public Users(String id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
-    public Users(String id, String nome, String fileName) {
+    public Users(String id, String nome, String fileName, int fileType) {
         this.id = id;
         this.nome = nome;
         this.fileName = fileName;
+        this.fileType = fileType;
     }
+
+    public int getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
+    }
+
 
     public String getId() {
         return id;

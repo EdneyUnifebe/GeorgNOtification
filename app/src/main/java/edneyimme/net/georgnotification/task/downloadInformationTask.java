@@ -125,8 +125,10 @@ public class   downloadInformationTask extends AsyncTask<String, String, Void> {
 
                 String nomeUsuario = jObject.getString("pessoa_nome");
                 String idUsuario = jObject.getString("captura_id");
+                String arquivo_nome = jObject.getString("arquivo_nome");
+                int arquivo_tipo = jObject.getInt("arquivo_tipo");
 
-                Users users = new Users(idUsuario, nomeUsuario);
+                Users users = new Users(idUsuario, nomeUsuario, arquivo_nome, arquivo_tipo);
                 Log.i("DownloadInformation", "ToString="+users.toString());
                 //listaDeUsuarios.add(users);
 

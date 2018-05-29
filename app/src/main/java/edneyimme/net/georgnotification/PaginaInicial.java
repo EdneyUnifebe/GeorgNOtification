@@ -100,7 +100,8 @@ public class PaginaInicial extends Activity {
                                 String nomeUsuario = jsonObject.getString("pessoa_nome");
                                 String idUsuario = jsonObject.getString("captura_id");
                                 String arquivo_nome = jsonObject.getString("arquivo_nome");
-                                Users users = new Users(idUsuario, nomeUsuario, arquivo_nome);
+                                int arquivo_tipo = jsonObject.getInt("arquivo_tipo");
+                                Users users = new Users(idUsuario, nomeUsuario, arquivo_nome, arquivo_tipo);
                                 listaDeUsuarios.add(users);
                             }
                             listAdapter.notifyDataSetChanged();

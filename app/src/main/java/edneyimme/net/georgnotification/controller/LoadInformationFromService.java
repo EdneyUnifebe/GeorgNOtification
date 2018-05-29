@@ -10,10 +10,7 @@ public class LoadInformationFromService {
 
     public ArrayList<Users> getUserInformationFromService() {
 
-        for (int indice = 0; indice < 10; indice++) {
-            Users u = new Users("" + indice, "Nome " + indice);
-            usersList.add(u);
-        }
+
         return usersList;
     }
 

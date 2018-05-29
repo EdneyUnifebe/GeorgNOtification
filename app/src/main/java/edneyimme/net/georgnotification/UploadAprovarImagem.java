@@ -2,6 +2,7 @@ package edneyimme.net.georgnotification;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -47,20 +48,20 @@ import edneyimme.net.georgnotification.dao.Users;
 public class UploadAprovarImagem extends Activity {
 
     public static final String USER_DAO = "USER_DAO";
-    ImageButton imagemCamera;
-    ImageButton imagemAprovar;
-    ImageButton imagemRecusar;
-    ImageView imagemFoto;
-    Bitmap imageBitmap;
-    File file;
+    private ImageButton imagemCamera;
+    private ImageButton imagemAprovar;
+    private ImageButton imagemRecusar;
+    private ImageView imagemFoto;
+    private Bitmap imageBitmap;
+    private File file;
     private static final int REQUEST_CODE = 1;
     private Bitmap bitmap;
-    Users users;
-    private String fileName ="";
-    public  ProgressDialog progressDialog;
+    private Users users;
+    private String fileName = "";
+    int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.upload_imagem);
 
@@ -75,7 +76,7 @@ public class UploadAprovarImagem extends Activity {
         });
 
         TextView nomeUsuario = findViewById(R.id.txNameUsuario);
-        String name=getString(R.string.nameUsuario)+": "+users.getNome();
+        String name = getString(R.string.nameUsuario) + users.getNome();
         nomeUsuario.setText(name);
         imagemAprovar = (ImageButton) findViewById(R.id.imageAprovar);
         imagemAprovar.setVisibility(View.INVISIBLE);
@@ -95,31 +96,35 @@ public class UploadAprovarImagem extends Activity {
         });
         imagemRecusar.setVisibility(View.INVISIBLE);
         imagemFoto = (ImageView) findViewById(R.id.imagemFoto);
-
     }
 
     private void imageReprovar() {
-
+        Intent paginaInicial = new Intent(UploadAprovarImagem.this, PaginaInicial.class);
+        startActivity(paginaInicial);
         finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     private void aprovarImagem() {
-
-        uploadArquivoTask u = new uploadArquivoTask();
+        uploadArquivoTask u = new uploadArquivoTask(UploadAprovarImagem.this);
         u.execute("");
-        finish();
 
+        Intent paginaInicial = new Intent(UploadAprovarImagem.this, PaginaInicial.class);
+        startActivity(paginaInicial);
+        finish();
     }
-    int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+
     private void abrirCamera() {
         final int MyVersion = Build.VERSION.SDK_INT;
         if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (!checkIfAlreadyhavePermission()) {
                 ActivityCompat.requestPermissions(UploadAprovarImagem.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             } else {
-
-
-                file = new File(Environment.getExternalStorageDirectory() + "/"+this.fileName+".png");
+                file = new File(Environment.getExternalStorageDirectory() + "/" + this.fileName + ".png");
                 Uri outputFileUri = Uri.fromFile(file);
 
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -129,6 +134,7 @@ public class UploadAprovarImagem extends Activity {
             }
         }
     }
+
     private boolean checkIfAlreadyhavePermission() {
         int result = ContextCompat.checkSelfPermission(UploadAprovarImagem.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return result == PackageManager.PERMISSION_GRANTED;
@@ -140,7 +146,7 @@ public class UploadAprovarImagem extends Activity {
                 try {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 3;
-                    //Bitmap imageBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() +  "/"+fileName+".png", options);
+
                     Bitmap imageBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     boolean validaCompressao = imageBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream);
@@ -151,7 +157,7 @@ public class UploadAprovarImagem extends Activity {
                     imagemAprovar.setVisibility(View.VISIBLE);
                     boolean isImageTaken = true;
                 } catch (Exception e) {
-                    Toast.makeText(this, "Erro ao salvar imagem="+e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Erro ao salvar imagem=" + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
             } else if (resultCode == RESULT_CANCELED) {
@@ -205,12 +211,17 @@ public class UploadAprovarImagem extends Activity {
 */
 
     class uploadArquivoTask extends AsyncTask<String, String, Void> {
-
-        public ProgressDialog progressDialog = new ProgressDialog(UploadAprovarImagem.this);
+        private Context context;
+        public ProgressDialog progressDialog;
         InputStream inputStream = null;
         String result = "";
 
+        public uploadArquivoTask(UploadAprovarImagem uploadAprovarImagem) {
+            this.context = uploadAprovarImagem;
+        }
+
         protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context);
             progressDialog.setMessage("Enviando arquivo, aguarde...");
             progressDialog.show();
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -223,10 +234,14 @@ public class UploadAprovarImagem extends Activity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            Log.i("UploadAprovarImagem", "Path = "+ file.getAbsolutePath());
-            UploadArquivo up = new UploadArquivo();
-            up.uploadFile(file.getAbsolutePath());
-
+            Log.i("UploadAprovarImagem", "Path = " + file.getAbsolutePath());
+            if (users.getFileType() ==2 ){
+                converterImagemPDF();
+            }else {
+                UploadArquivo up = new UploadArquivo();
+                up.uploadFile(file.getAbsolutePath());
+            }
+            users.setFileName(fileName + ".png");
             UpdateInformation ui = new UpdateInformation();
             ui.setContext(UploadAprovarImagem.this);
             ui.setUsers(users);
@@ -237,6 +252,10 @@ public class UploadAprovarImagem extends Activity {
         protected void onPostExecute(Void v) {
             progressDialog.dismiss();
         }
+    }
+
+    private void converterImagemPDF() {
+
     }
 
 }

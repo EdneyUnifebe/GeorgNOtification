@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Menu"
                 android:id="@+id/txNameUsuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="388dp"
             android:layout_margin="7dp"
-            android:src="@drawable/apse" />
+            />
 
     </LinearLayout>
 

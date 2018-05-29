@@ -62,6 +62,7 @@ public class UpdateInformation {
                 Map<String, String> params = new HashMap<String, String>();
                 Log.i("UpdateInformaation", "idUsuario = " + users.getId());
                 params.put("captura_id", users.getId());
+                params.put("arquivo_nome", users.getFileName());
                 return params;
             }
 
