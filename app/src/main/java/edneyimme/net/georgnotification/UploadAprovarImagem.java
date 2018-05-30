@@ -112,10 +112,14 @@ public class UploadAprovarImagem extends Activity {
     private void aprovarImagem() {
         uploadArquivoTask u = new uploadArquivoTask(UploadAprovarImagem.this);
         u.execute("");
+        chamarPaginaInicial();
+    }
 
+    private void chamarPaginaInicial() {
         Intent paginaInicial = new Intent(UploadAprovarImagem.this, PaginaInicial.class);
         startActivity(paginaInicial);
         finish();
+
     }
 
     private void abrirCamera() {
@@ -212,7 +216,7 @@ public class UploadAprovarImagem extends Activity {
 
     class uploadArquivoTask extends AsyncTask<String, String, Void> {
         private Context context;
-        public ProgressDialog progressDialog;
+        ProgressDialog progressDialog;
         InputStream inputStream = null;
         String result = "";
 
@@ -221,8 +225,8 @@ public class UploadAprovarImagem extends Activity {
         }
 
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Enviando arquivo, aguarde...");
+            progressDialog = new ProgressDialog(UploadAprovarImagem.this);
+            progressDialog.setMessage("Enviando arquivo.");
             progressDialog.show();
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface arg0) {
@@ -234,18 +238,21 @@ public class UploadAprovarImagem extends Activity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            Log.i("UploadAprovarImagem", "Path = " + file.getAbsolutePath());
+
             if (users.getFileType() ==2 ){
                 converterImagemPDF();
+                users.setFileName(fileName + ".pdf");
             }else {
                 UploadArquivo up = new UploadArquivo();
                 up.uploadFile(file.getAbsolutePath());
+                users.setFileName(fileName + ".png");
             }
-            users.setFileName(fileName + ".png");
+
             UpdateInformation ui = new UpdateInformation();
             ui.setContext(UploadAprovarImagem.this);
             ui.setUsers(users);
-            ui.alterarStatus(users);
+            ui.alterarStatus(users, UploadAprovarImagem.this);
+
             return null;
         }
 

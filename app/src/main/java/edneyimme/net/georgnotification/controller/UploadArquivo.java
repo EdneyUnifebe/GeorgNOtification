@@ -58,7 +58,7 @@ public class UploadArquivo {
         final String fileName = parts[parts.length - 1];
 
         if (!selectedFile.isFile()) {
-            //dialog.dismiss();
+
             Log.e("UploadFile", "Source File Doesn't Exist: " + selectedFilePath);
         } else {
             try {
@@ -138,7 +138,7 @@ public class UploadArquivo {
             finally {
 
             }
-            //dialog.dismiss();
+
             return serverResponseCode;
         }
         return serverResponseCode;

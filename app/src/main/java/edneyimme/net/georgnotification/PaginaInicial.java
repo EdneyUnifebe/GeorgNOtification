@@ -72,13 +72,27 @@ public class PaginaInicial extends Activity {
     public void carrecarListaServidor() {
         listaDeUsuarios = new ArrayList<Users>();
 
+        /*
         LoadingInformation l = new LoadingInformation(PaginaInicial.this);
         l.execute();
-
+        */
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getServerData();
+        listAdapter.notifyDataSetChanged();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getServerData();
+        listAdapter.notifyDataSetChanged();
+
+    }
 
     private void getServerData() {
         String urlGetServerData = URL_USER_DATA;

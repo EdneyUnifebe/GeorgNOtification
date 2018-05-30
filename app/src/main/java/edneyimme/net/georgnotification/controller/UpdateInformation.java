@@ -43,8 +43,8 @@ public class UpdateInformation {
 
 
 
-    public void alterarStatus(final Users users) {
-        RequestQueue queue = Volley.newRequestQueue(context);
+    public void alterarStatus(final Users users, Context contexto) {
+        RequestQueue queue = Volley.newRequestQueue(contexto);
         StringRequest sr = new StringRequest(Request.Method.POST, URL_UPDATE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
