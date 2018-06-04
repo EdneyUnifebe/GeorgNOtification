@@ -9,6 +9,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,8 +22,11 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -173,47 +180,6 @@ public class UploadAprovarImagem extends Activity {
     }
 
 
-/*
-    public void onPictureTaken(byte[] data, Camera camera) {
-
-        File pictureFileDir = getDir();
-        if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
-            Log.d("UploadAprovarImage", "Can't create directory to save image.");
-            Toast.makeText(UploadAprovarImagem.this, "Can't create directory to save image.",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
-        String date = dateFormat.format(new Date());
-        String photoFile = "Picture_" + date + ".jpg";
-
-        String filename = pictureFileDir.getPath() + File.separator + photoFile;
-
-        File pictureFile = new File(filename);
-
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            fos.write(data);
-            fos.close();
-            Toast.makeText(UploadAprovarImagem.this, "New Image saved:" + photoFile,
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception error) {
-            Log.d("UploadAprovarImagem", "File" + filename + "not saved: "
-                    + error.getMessage());
-            Toast.makeText(UploadAprovarImagem.this, "Image could not be saved.",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private File getDir() {
-        File sdDir = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        return new File(sdDir, "CameraAPIDemo");
-    }
-
-*/
-
     class uploadArquivoTask extends AsyncTask<String, String, Void> {
         private Context context;
         ProgressDialog progressDialog;
@@ -241,6 +207,7 @@ public class UploadAprovarImagem extends Activity {
 
             if (users.getFileType() ==2 ){
                 converterImagemPDF();
+                Log.i("UploadAprovarImagem", "image="+fileName);
                 users.setFileName(fileName + ".pdf");
             }else {
                 UploadArquivo up = new UploadArquivo();
@@ -262,7 +229,57 @@ public class UploadAprovarImagem extends Activity {
     }
 
     private void converterImagemPDF() {
-
+        createPdf();
     }
+
+    private void createPdf(){
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        float hight = displaymetrics.heightPixels ;
+        float width = displaymetrics.widthPixels ;
+
+        int convertHighet = (int) hight, convertWidth = (int) width;
+
+//        Resources mResources = getResources();
+//        Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.screenshot);
+
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+
+
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#ffffff"));
+        canvas.drawPaint(paint);
+
+
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
+
+        paint.setColor(Color.BLUE);
+        canvas.drawBitmap(bitmap, 0, 0 , null);
+        document.finishPage(page);
+
+        // write the document content
+        String targetPdf = Environment.getExternalStorageDirectory()+ "/"+fileName+".pdf";
+        Log.i("UploadAprovarImagem", "Endereco="+targetPdf);
+
+        File filePath = new File(targetPdf);
+        try {
+            document.writeTo(new FileOutputStream(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("UploadAprovarImagem", "Endereço "+ filePath.getAbsolutePath());
+            Toast.makeText(this, "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        // close the document
+        document.close();
+    }
+
 
 }

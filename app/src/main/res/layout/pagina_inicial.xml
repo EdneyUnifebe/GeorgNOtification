@@ -13,31 +13,71 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="157dp"
-            android:layout_gravity="top"
+            android:layout_width="140dp"
+            android:layout_height="137dp"
+            android:layout_gravity="left"
             android:contentDescription="TODO"
-            android:src="@drawable/apse" />
+            android:gravity="left"
+            android:src="@drawable/logo" />
 
     </LinearLayout>
+    <TextView
+        android:id="@+id/qualicapturas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:fontFamily="@string/font_arial"
+        android:gravity="left"
+        android:textColor="@color/colorRED"
+        android:text="@string/qualicapturas"
+        android:textSize="32dp"
+        android:textStyle="bold" />
+
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_weight="4">
 
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ListView
-                android:id="@+id/listViewUsers"
+            <TextView
+                android:id="@+id/capturas_pendentes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:textStyle="bold"
+                android:text="@string/capturaspendentes" />
+
+            <TextView
+                android:id="@+id/nomeConsultaPaginaInicial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:textStyle="bold"
+                android:text="@string/nome" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_margin="10dp"
-                android:visibility="visible" />
+                android:background="@color/azulfundolistview"
+                android:orientation="vertical">
+
+                <ListView
+                    android:id="@+id/listViewUsers"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_margin="10dp"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>

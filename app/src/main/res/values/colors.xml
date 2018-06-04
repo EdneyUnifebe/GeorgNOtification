@@ -3,4 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="fonteTextoListview">#245EA9</color>
+    <color name="azulfundolistview">#e6f3ff</color>
+    <color name="colorRED">#C62721</color>
 </resources>

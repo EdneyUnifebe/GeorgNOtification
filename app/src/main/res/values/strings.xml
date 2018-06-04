@@ -7,4 +7,8 @@
     <string name="title_notifications">Notifications</string>
     <string name="nome_usuario">Nome Usuarios</string>
     <string name="nameUsuario">Nome:</string>
+    <string name="nome">NOME</string>
+    <string name="capturaspendentes">Capturas pendentes</string>
+    <string name="qualicapturas">QualiCaptura</string>
+    <string name="font_arial">Arial</string>
 </resources>

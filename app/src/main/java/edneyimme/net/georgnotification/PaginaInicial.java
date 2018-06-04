@@ -144,8 +144,10 @@ public class PaginaInicial extends Activity {
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage("Aguarde.");
-            dialog.show();
+/*
+//            dialog.setMessage("Aguarde.");
+//            dialog.show();
+*/
         }
 
         protected Void doInBackground(Void... args) {
