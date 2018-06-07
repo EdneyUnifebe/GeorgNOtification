@@ -48,7 +48,7 @@ public class PaginaInicial extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 chamarTelaDetalheUsuario(i);
             }
-        });
+        });///
         carrecarListaServidor();
         listAdapter = new listUsersAdapter(PaginaInicial.this, this.listaDeUsuarios);
         listViewUsers.setAdapter(listAdapter);

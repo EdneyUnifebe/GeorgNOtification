@@ -27,8 +27,7 @@ import java.util.Map;
 public class UploadArquivo {
 
 
-    private Context contexto;
-
+    private Context contexto;////
     public void setContexto(Context contexto) {
         this.contexto = contexto;
     }
